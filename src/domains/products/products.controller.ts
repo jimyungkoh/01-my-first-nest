@@ -12,6 +12,5 @@ export class ProductsController {
 
   @Get(':productId')
   async findOne(@Param('productId') productId: string) {
-    return await this.productsService.findOne(+productId);
-  }
+    return await this.productsService.findOne(+productId);}
 }
