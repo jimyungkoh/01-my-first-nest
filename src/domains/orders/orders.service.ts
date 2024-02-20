@@ -12,7 +12,7 @@ export class OrdersService {
   }
 
   findAll() {
-    return this.prismaService.sayHello();
+    return this.prismaService.Hello();
   }
 
   findOne(id: number) {

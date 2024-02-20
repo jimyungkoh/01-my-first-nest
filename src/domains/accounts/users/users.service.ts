@@ -8,8 +8,8 @@ import { UsersSignInDto, UsersSignUpDto } from './users.dto';
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async generateAccessToken(user: Pick<User, 'id' | 'email'>) {
-    const JWT_SECRET = process.env.JWT_SECRET;
+  async generateAccessToken(user: Pick<User, 'id' | 'email'>): Promise<string> {
+    const JWT_SECRET = process.env.JWT_SECRET || '';
     return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
       subject: String(user.id),
       expiresIn: '7d',
