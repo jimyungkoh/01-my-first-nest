@@ -5,14 +5,17 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 export class ProductsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll() {
-    const products = await this.prismaService.product.findMany();
+  async getProducts() {
+    const products = await this.prismaService.product.findMany({
+      include: { brand: true },
+    });
     return products;
   }
 
-  async findOne(productId: number) {
+  async getProduct(productId: number) {
     const product = await this.prismaService.product.findUnique({
       where: { id: productId },
+      include: { brand: true },
     });
     return product;
   }

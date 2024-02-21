@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { UsersSignInDto, UsersSignUpDto } from './users.dto';
 import { UsersService } from './users.service';
@@ -25,6 +17,11 @@ export class UsersController {
 
   @Post('/sign-in')
   async signIn(@Body() signInDto: UsersSignInDto) {
+    return await this.usersService.signIn(signInDto);
+  }
+
+  @Put('/profile')
+  async updateProfile(@Body() signInDto: UsersSignInDto) {
     return await this.usersService.signIn(signInDto);
   }
 }

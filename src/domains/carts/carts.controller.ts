@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
+import { User } from '@prisma/client';
+import { SignedInOnly } from 'src/decorators/signed-in-only.decorator';
+import { DUser } from 'src/decorators/user.decorator';
 import { CartsService } from './carts.service';
-import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
-  @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartsService.create(createCartDto);
-  }
-
   @Get()
-  findAll() {
-    return this.cartsService.findAll();
+  @SignedInOnly()
+  async getCart(@DUser() user: User) {
+    return await this.cartsService.getCartByUserId(user.id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartsService.findOne(+id);
+  @Post('products/:productId')
+  @SignedInOnly()
+  async addItemToCart(
+    @DUser() user: User,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
+    const cartItem = await this.cartsService.addItemToCart(user.id, productId);
+    return cartItem;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.update(+id, updateCartDto);
+  @Delete('products/:productId')
+  @SignedInOnly()
+  async removeItemFromCart(
+    @DUser() user: User,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
+    const cartItem = await this.cartsService.removeItemFromCart(
+      user.id,
+      productId,
+    );
+    return cartItem;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartsService.remove(+id);
+  @Delete('products/:productId/clear')
+  @SignedInOnly()
+  async clearItemInCart(
+    @DUser() user: User,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
+    const cartItem = await this.cartsService.clearItemsFromCart(
+      user.id,
+      productId,
+    );
+    return cartItem;
   }
 }

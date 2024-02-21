@@ -1,4 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { SignedInOnly } from 'src/decorators/signed-in-only.decorator';
+import { DUser } from 'src/decorators/user.decorator';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -6,11 +9,14 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async findAll() {
-    return await this.productsService.findAll();
+  @SignedInOnly()
+  async getProducts(@DUser() user: User) {
+    console.log(user);
+    return await this.productsService.getProducts();
   }
 
   @Get(':productId')
-  async findOne(@Param('productId') productId: string) {
-    return await this.productsService.findOne(+productId);}
+  async getProduct(@Param('productId', ParseIntPipe) productId: number) {
+    return await this.productsService.getProduct(productId);
+  }
 }
